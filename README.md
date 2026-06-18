@@ -14,9 +14,9 @@ It monitors soil moisture levels and water tank depth, managing a DC water pump 
   - Charger: TP4056 Lithium Battery Charger Module (charges battery cells).
   - Boost Converter: MT3608 DC-DC Boost Converter Module (steps up 3V-4.2V battery voltage to 5V to power the ESP32 VIN).
 - **Water Pump Power Source (Adapter System)**:
-  - Adapter: 21V DC Power Adapter (supplies independent power to the pump).
+  - Adapter: 12V DC Power Adapter (supplies independent power to the pump).
   - Water Pump: DC Water Pump Motor.
-- **Shared Ground**: Both the battery system (boost converter output GND) and the adapter system (21V adapter negative) are tied together to a single common GND bus.
+- **Shared Ground**: Both the battery system (boost converter output GND) and the adapter system (12V adapter negative) are tied together to a single common GND bus.
 
 ### Controller & Logic
 - MCU: ESP32 DevKit V1 (30-pin version)
@@ -51,14 +51,14 @@ All components must share a common ground connection.
 | **MT3608 Boost Module** | VIN+ / VIN- | TP4056 OUT+ / OUT- | Input from charger board |
 | | VOUT+ (5V) | ESP32 VIN | Steps up battery voltage to 5V |
 | | VOUT- (GND) | GND Bus | Connects to common ground |
-| **21V Power Adapter** | Positive (+) | Pump Positive (+) | Directly powers the water pump |
+| **12V Power Adapter** | Positive (+) | Pump Positive (+) | Directly powers the water pump |
 | | Negative (-) | GND Bus | Tied to common ground |
 | **ESP32 (30-pin)** | VIN | MT3608 VOUT+ (5V) | Main 5V power input |
 | | GND | GND Bus | Common Ground |
 | | 3.3V | VCC Bus (3.3V) | Powers Moisture Sensor and TFT VCC |
-| **DC Water Pump** | Positive (+) | 21V Bus (Adapter +) | Powered directly by the 21V supply |
+| **DC Water Pump** | Positive (+) | 12V Bus (Adapter +) | Powered directly by the 12V supply |
 | | Negative (-) | MOSFET Drain | Controlled switching path |
-| **1N4007 Diode** | Cathode (Stripe) | 21V Bus (Adapter +) | Connected across pump positive terminal |
+| **1N4007 Diode** | Cathode (Stripe) | 12V Bus (Adapter +) | Connected across pump positive terminal |
 | | Anode | MOSFET Drain | Connected across pump negative terminal |
 | **IRLZ44N MOSFET** | Gate (G1) | ESP32 GPIO 25 | PWM pump speed control |
 | | Gate (G2) | 100k Ohm Resistor -> GND | Gate pull-down resistor |
@@ -95,9 +95,9 @@ All components must share a common ground connection.
 ## Power Distribution Layout
 
 1. **ESP32 5V Power Path**: Power is supplied by two parallel lithium cells charging via a TP4056 module. The battery voltage is stepped up to 5V by the MT3608 boost converter and sent to the ESP32 VIN pin.
-2. **Pump 21V Power Path**: The DC water pump is powered independently by a 21V power adapter.
-3. **Common Ground Plane**: The negative output of the MT3608 boost converter, the negative terminal of the 21V adapter, the ESP32 GND, and the MOSFET source pin are all tied to a single common GND. This common reference is required for the ESP32 to switch the MOSFET.
-4. **Inductive Flyback Protection**: The 1N4007 diode is connected across the water pump terminals (cathode to 21V positive, anode to MOSFET drain) to suppress inductive voltage spikes generated when the pump turns off.
+2. **Pump 12V Power Path**: The DC water pump is powered independently by a 12V power adapter.
+3. **Common Ground Plane**: The negative output of the MT3608 boost converter, the negative terminal of the 12V adapter, the ESP32 GND, and the MOSFET source pin are all tied to a single common GND. This common reference is required for the ESP32 to switch the MOSFET.
+4. **Inductive Flyback Protection**: The 1N4007 diode is connected across the water pump terminals (cathode to 12V positive, anode to MOSFET drain) to suppress inductive voltage spikes generated when the pump turns off.
 5. **Gate Control**: The 100k Ohm gate pull-down resistor holds the MOSFET gate at GND to prevent the pump from turning on during ESP32 bootup or when the GPIO pin is in a floating state.
 6. **ECHO Voltage Divider**: The HC-SR04 sensor outputs a 5V echo signal. To prevent damage to the 3.3V logic of the ESP32, a voltage divider (1k Ohm series resistor and 2k Ohm pull-down resistor) steps the echo signal down to 3.3V before it enters GPIO 35.
 
