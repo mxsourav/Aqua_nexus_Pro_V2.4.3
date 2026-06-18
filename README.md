@@ -37,58 +37,83 @@ It monitors soil moisture levels and water tank depth, managing a DC water pump 
 
 ---
 
-## Detailed Pin Connection Diagram
+## Pin Connection Tables by Module
 
-All components must share a common ground connection.
+All components must share a common ground reference.
 
-| Module / Component | Component Pin | Connection Destination | Hardware Component / Notes |
+### 1. Power Supply, Charger & Boost Converter
+
+| Component | Pin | Connected To | Notes |
 | --- | --- | --- | --- |
-| **Lithium Battery Pack** | Joined Positive (+) | TP4056 B+ | Two lithium cells in parallel |
-| | Joined Negative (-) | TP4056 B- | Ground path |
-| **TP4056 Charger** | B+ / B- | Battery Positive / Negative | Charging connections |
-| | OUT+ | MT3608 VIN+ | Output to boost converter input |
-| | OUT- | MT3608 VIN- / GND | Output ground |
-| **MT3608 Boost Module** | VIN+ / VIN- | TP4056 OUT+ / OUT- | Input from charger board |
-| | VOUT+ (5V) | ESP32 VIN | Steps up battery voltage to 5V |
-| | VOUT- (GND) | GND Bus | Connects to common ground |
-| **12V Power Adapter** | Positive (+) | Pump Positive (+) | Directly powers the water pump |
+| **Lithium Battery Pack** | Positive (+) | TP4056 B+ | Two lithium cells in parallel |
+| | Negative (-) | TP4056 B- | Battery ground path |
+| **TP4056 Charger** | B+ / B- | Battery (+) / (-) | Input charging connection |
+| | OUT+ | MT3608 VIN+ | Positive output path |
+| | OUT- | MT3608 VIN- | Return output ground path |
+| **MT3608 Boost Module** | VIN+ / VIN- | TP4056 OUT+ / OUT- | input from charger |
+| | VOUT+ | ESP32 VIN (5V) | Regulated 5V output to ESP32 |
+| | VOUT- | GND Bus | Connects to common ground |
+| **12V Power Adapter** | Positive (+) | Pump Positive (+) | Switched 12V bus for water pump |
 | | Negative (-) | GND Bus | Tied to common ground |
-| **ESP32 (30-pin)** | VIN | MT3608 VOUT+ (5V) | Main 5V power input |
+
+### 2. IRLZ44N MOSFET & 12V DC Pump Switching
+
+| Component / Node | Pin / Terminal | Connected To | Notes |
+| --- | --- | --- | --- |
+| **ESP32** | GPIO 25 | MOSFET Gate | PWM signal controlling pump speed |
+| **IRLZ44N MOSFET** | Gate | ESP32 GPIO 25 | Gate terminal |
+| | Gate | 100k Ohm Resistor -> GND | Pulled down to GND to prevent boot float |
+| | Drain | Pump Negative (-) | Switched ground return path |
+| | Source | GND Bus | Connected directly to common ground |
+| **DC Water Pump** | Positive (+) | 12V Bus (Adapter +) | Directly powered by 12V supply |
+| | Negative (-) | MOSFET Drain | Switching return path |
+| **1N4007 Diode** | Cathode (Stripe) | 12V Bus (Adapter +) | Clamps voltage spikes |
+| | Anode | MOSFET Drain | Clamps voltage spikes |
+
+### 3. HC-SR04 Ultrasonic Sensor & Echo Divider
+
+| Component | Pin / Resistor | Connected To | Notes |
+| --- | --- | --- | --- |
+| **HC-SR04 Sensor** | VCC | MT3608 VOUT+ (5V) | Main 5V power input |
 | | GND | GND Bus | Common Ground |
-| | 3.3V | VCC Bus (3.3V) | Powers Moisture Sensor and TFT VCC |
-| **DC Water Pump** | Positive (+) | 12V Bus (Adapter +) | Powered directly by the 12V supply |
-| | Negative (-) | MOSFET Drain | Controlled switching path |
-| **1N4007 Diode** | Cathode (Stripe) | 12V Bus (Adapter +) | Connected across pump positive terminal |
-| | Anode | MOSFET Drain | Connected across pump negative terminal |
-| **IRLZ44N MOSFET** | Gate (G1) | ESP32 GPIO 25 | PWM pump speed control |
-| | Gate (G2) | 100k Ohm Resistor -> GND | Gate pull-down resistor |
-| | Drain (D) | Pump Negative (-) | Switched path |
-| | Source (S) | GND Bus | Connected to common ground |
-| **HC-SR04 Ultrasonic** | VCC | MT3608 VOUT+ (5V) | Powered by 5V |
+| | TRIG | ESP32 GPIO 33 | Trigger signal from ESP32 |
+| | ECHO | 1k Ohm Resistor | Output signal |
+| **Echo Divider** | 1k Ohm Resistor | HC-SR04 ECHO pin | In series with ECHO pin |
+| | 2k Ohm Resistor | GND Bus | Pull-down resistor |
+| | Junction | ESP32 GPIO 35 | Drops 5V echo output to safe 3.3V |
+
+### 4. Capacitive Soil Moisture Sensor v1.2
+
+| Component | Pin | Connected To | Notes |
+| --- | --- | --- | --- |
+| **Moisture Sensor** | VCC | ESP32 3.3V | Powered by 3.3V to minimize sensor corrosion |
 | | GND | GND Bus | Common Ground |
-| | TRIG | ESP32 GPIO 33 | Trigger signal |
-| | ECHO | 1k Ohm Resistor | Connected to 1k Ohm resistor of the voltage divider |
-| **ECHO Voltage Divider** | Resistor 1 (1k) | HC-SR04 ECHO | Series resistor |
-| | Junction | ESP32 GPIO 35 | Junction between 1k and 2k resistors |
-| | Resistor 2 (2k) | GND Bus | Pull-down to GND (reduces 5V echo to 3.3V) |
-| **Moisture Sensor v1.2** | VCC | ESP32 3.3V | Powered by 3.3V |
-| | GND | GND Bus | Common Ground |
-| | AOUT | ESP32 GPIO 34 | Analog moisture reading (ADC1 CH6) |
-| **ST7735 TFT Display** | VCC | ESP32 3.3V | Power input |
+| | AOUT | ESP32 GPIO 34 | Analog soil moisture signal (ADC1 CH6) |
+
+### 5. ST7735 1.8" TFT Display (SPI)
+
+| Component | Pin | Connected To | Notes |
+| --- | --- | --- | --- |
+| **TFT Display** | VCC | ESP32 3.3V | Power input |
 | | GND | GND Bus | Common Ground |
 | | CS | ESP32 GPIO 5 | SPI Chip Select |
-| | RST | ESP32 GPIO 4 | Display Reset |
-| | A0 / DC | ESP32 GPIO 22 | Data / Command Selection |
+| | RST | ESP32 GPIO 4 | Display hardware reset |
+| | A0 / DC | ESP32 GPIO 22 | Data / Command select line |
 | | SDA / MOSI | ESP32 GPIO 23 | SPI Master Out Slave In |
 | | SCK / CLK | ESP32 GPIO 18 | SPI Clock |
-| | LED / BL | ESP32 GPIO 21 | Backlight control |
-| **Active Buzzer (5V)** | Positive (+) | ESP32 GPIO 26 | Alarm output |
-| | Negative (-) | GND Bus | Common Ground |
-| **Tactile Push Button** | Pin 1 | ESP32 GPIO 27 | Menu toggle input (uses internal pull-up) |
+| | LED / BL | ESP32 GPIO 21 | Backlight control pin |
+
+### 6. Buzzer, Button & Power Filtering Capacitors
+
+| Component | Pin | Connected To | Notes |
+| --- | --- | --- | --- |
+| **5V Active Buzzer** | Positive (+) | ESP32 GPIO 26 | Alarm control signal |
+| | Negative (-) | GND Bus | Ground return |
+| **Tactile Push Button** | Pin 1 | ESP32 GPIO 27 | Mode toggle (configured with internal pull-up) |
 | | Pin 2 | GND Bus | Ground connection |
-| **Power Capacitors** | 100uF (+) | ESP32 VIN (5V) | Filter capacitor (observe polarity) |
-| | 100uF (-) | GND Bus | Filter capacitor ground |
-| | 104 Ceramic | ESP32 VIN & GND | Parallel high-frequency decoupling |
+| **Electrolytic Cap** | Positive (+) | ESP32 VIN (5V) | 100uF smoothing capacitor (observe polarity) |
+| | Negative (-) | GND Bus | Ground path |
+| **Ceramic Cap** | Non-polar (104) | ESP32 VIN & GND | 100nF high-frequency decoupling capacitor |
 
 ---
 
