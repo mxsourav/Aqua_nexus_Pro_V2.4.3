@@ -1,78 +1,49 @@
-# AquaNexus Pro — Smart Irrigation System
+# AquaNexus Pro - Smart Irrigation System
 
-AquaNexus Pro is a state-of-the-art automated planter and irrigation control system powered by the **ESP32 DevKit V1** microcontroller, a responsive local WebSocket web client, and the **Blynk IoT Cloud** platform.
+AquaNexus Pro is an automated planter and irrigation control system built around an ESP32 microcontroller. It features a local web-based control panel communicating via WebSockets, and links to the Blynk IoT Cloud for remote dashboard access.
 
----
+The system monitors soil moisture levels and water tank depth, managing a water pump based on set thresholds.
 
-## 🌟 Key Features
+## Features
 
-* **Real-time Local Control**: Uses a bi-directional persistent WebSocket connection to control pump overrides, monitor sensors, and change configurations with sub-second latency.
-* **Cloud Integration**: Synchronizes telemetry and settings with the Blynk IoT Cloud for global remote monitoring and alerting.
-* **Interactive 3D Bento Control Room**: A modern, premium dark-themed web dashboard with responsive grids, interactive 3D tactile buttons, custom scrollbars, and animated reservoir fill-levels.
-* **Dual-sensor Fallbacks**: Utilizes both a Capacitive Soil Moisture Sensor (v1.2) for ground level moisture and an HC-SR04 Ultrasonic Sensor for water reservoir depth tracking.
-* **OLED/TFT Display Interface**: Renders real-time statuses and local stats directly on an attached SPI TFT screen.
+- Real-time sensor telemetry and control toggles using WebSockets on the local network.
+- Internet monitoring and status updates synced with Blynk IoT Cloud.
+- Automatic irrigation based on configurable soil moisture thresholds.
+- Premium dark-themed bento grid dashboard (HTML/CSS/JS).
+- Local SPI TFT screen output.
 
----
+## Hardware Configuration
 
-## 🛠️ Hardware Component Map & Pinouts
+- MCU: ESP32 (38-pin DevKit V1)
+- Soil Moisture Sensor: Capacitive v1.2 (GPIO 34 / ADC1_CH6)
+- Water Level Sensor: HC-SR04 Ultrasonic (Trigger: GPIO 33, Echo: GPIO 35)
+- Pump Control: MOSFET (GPIO 25, LEDC PWM)
+- Display: SPI TFT ST7735 (CS: GPIO 5, RST: GPIO 4, DC: GPIO 22, SDA: GPIO 23, SCL: GPIO 18, BL: GPIO 21)
+- Alarm: Active Buzzer (GPIO 26)
+- Input: Physical Mode Toggle Button (GPIO 27)
 
-For detailed specifications, see [pin_connection_details.md](file:///F:/Work%20for%20Ankita/Aqua_nexus_Pro_V2.4.3/pin_connection_details.md) and [component_roles.md](file:///F:/Work%20for%20Ankita/Aqua_nexus_Pro_V2.4.3/component_roles.md).
+For full wiring specs, see pin_connection_details.md and component_roles.md.
 
-| Component | ESP32 GPIO | Description / Mode |
-| --- | --- | --- |
-| **TFT CS** | GPIO 5 | SPI Chip Select |
-| **TFT RST** | GPIO 4 | Display Reset |
-| **TFT DC** | GPIO 22 | Data / Command |
-| **TFT MOSI** | GPIO 23 | SPI MOSI (SDA) |
-| **TFT SCK** | GPIO 18 | SPI SCK (SCL) |
-| **TFT BL** | GPIO 21 | Backlight Enable |
-| **HC-SR04 Trigger** | GPIO 33 | Ultrasonic Trigger Output |
-| **HC-SR04 Echo** | GPIO 35 | Ultrasonic Echo Input |
-| **Moisture Sensor** | GPIO 34 | Analog Input (ADC1 CH6) |
-| **MOSFET Gate** | GPIO 25 | PWM Duty Cycle output for Pump |
-| **Buzzer** | GPIO 26 | Audible Alert Output |
-| **Push Button** | GPIO 27 | Manual Display toggle button |
-| **Float Switch** | GPIO 13 | Backup Tank Empty Input |
+## Project Structure
 
----
+- include/config.h: Main configuration for pinouts, thresholds, and sensor limits.
+- include/secrets.h: Local credentials (ignored by Git, copy from secrets.h.example).
+- src/main.cpp: ESP32 setup and execution loop.
+- index.html: Web control room client.
+- documentation: md files containing detailed routing tables, component specifications, and schematics.
 
-## ⚙️ Firmware Configuration & Setup
+## Setup and Installation
 
-The firmware is developed using **PlatformIO** (VS Code).
+### 1. Firmware Upload
+1. Open this directory in VS Code with the PlatformIO extension installed.
+2. Copy include/secrets.h.example to include/secrets.h.
+3. Enter your Wi-Fi SSID, password, and Blynk Auth token in include/secrets.h.
+4. Connect the ESP32 and click Upload in PlatformIO.
 
-1. Open this directory in **VS Code** with the PlatformIO IDE extension installed.
-2. Edit configuration parameters in `include/config.h` (Wi-Fi SSID, passwords, Blynk Auth token, sensor calibration ranges).
-3. Connect the ESP32 DevKit to your machine via Micro-USB.
-4. Build and upload using PlatformIO's project tasks:
-   - **Build**: `pio run`
-   - **Upload**: `pio run --target upload`
-   - **Monitor**: `pio run --target monitor`
+### 2. Web Dashboard
+1. Open index.html directly in any web browser.
+2. The page will auto-connect to the ESP32 WebSocket server using the default MDNS address (flura.local) or your ESP32's local IP address.
 
----
+## Developer
 
-## 🖥️ Web Control Room
-
-The dashboard is built entirely with vanilla CSS and JavaScript, meaning it requires no bundlers or complex build setups.
-
-* Simply open `index.html` in any modern desktop, tablet, or mobile web browser.
-* It will auto-discover the local ESP32 IP address or MDNS host `flura.local`.
-* You can toggle manual/automatic pump states, set moisture thresholds, and view high-fidelity real-time telemetry.
-
----
-
-## 📄 Documentation Index
-* [instruction.md](file:///F:/Work%20for%20Ankita/Aqua_nexus_Pro_V2.4.3/instruction.md) — Comprehensive build instructions.
-* [component_roles.md](file:///F:/Work%20for%20Ankita/Aqua_nexus_Pro_V2.4.3/component_roles.md) — Detailed breakdown of every component's function.
-* [pin_connection_details.md](file:///F:/Work%20for%20Ankita/Aqua_nexus_Pro_V2.4.3/pin_connection_details.md) — Wire-level routing tables.
-* [schematic_diagram.md](file:///F:/Work%20for%20Ankita/Aqua_nexus_Pro_V2.4.3/schematic_diagram.md) — Structural diagrams and circuit details.
-* [blynk_credentials.md](file:///F:/Work%20for%20Ankita/Aqua_nexus_Pro_V2.4.3/blynk_credentials.md) — Setup guide for Blynk virtual pins.
-
----
-
-## 👥 Project Team & Contributors
-* **Ankita Das** — Project Lead
-* **Ananya Chakraborty** — Hardware Systems
-* **Dipankar Saha** — Systems Engineering
-* **Debraj Ghosh** — QA & Assembly
-* **Asif Sarwar** — Firmware Design
-* **MX SOURAV** — Dashboard Designer & Developer
+Developed by MX SOURAV (https://github.com/mxsourav)

@@ -1473,9 +1473,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), inset 0 0 1px rgba(255, 255, 255, 0.1);
   }
   .credits-grid {
-    display: grid;
-    grid-template-columns: 1.25fr 1fr;
-    gap: 20px;
+    display: flex;
+    justify-content: center;
     align-items: center;
     flex: 1;
   }
@@ -1987,12 +1986,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
         <section class="panel credits-panel">
           <div class="panel-title">
             <svg class="svg-icon" viewBox="0 0 24 24">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
-            Project Contributors
+            Developer Credits
           </div>
           <div class="single-card-grid">
             <article class="credits-card">
@@ -2050,16 +2047,6 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
               <!-- Bottom Part: Credits -->
               <div class="credits-grid">
-                <div class="team-section">
-                  <span class="credits-section-title">Project Team</span>
-                  <div class="credits-team-list">
-                    <div class="credits-member">Ankita Das</div>
-                    <div class="credits-member">Ananya Chakraborty</div>
-                    <div class="credits-member">Dipankar Saha</div>
-                    <div class="credits-member">Debraj Ghosh</div>
-                    <div class="credits-member">Asif Sarwar</div>
-                  </div>
-                </div>
                 <div class="dev-section">
                   <div class="credits-dev-box">
                     <div class="dev-text-container">
