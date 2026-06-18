@@ -1,0 +1,22 @@
+# PlatformIO local build folders
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+.gcc-flags.json
+
+# Local secrets file
+include/secrets.h
+
+# IDE config files
+.vscode/
+.idea/
+*.launch
+*.sublime-project
+*.sublime-workspace
+
+# Operating system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

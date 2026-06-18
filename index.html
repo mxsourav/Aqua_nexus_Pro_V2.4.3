@@ -1,0 +1,2798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AquaNexus Pro Control Room</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #070709;                  /* Deep slate black */
+  --bg-elevated: #0d0d10;         /* Deep blackish-charcoal */
+  --panel: #121215;               /* Solid charcoal bento card */
+  --panel-soft: #18181c;          /* Muted panel background */
+  --panel-strong: #222228;        /* High contrast active */
+  --border: rgba(255, 255, 255, 0.08); /* Subtle transparent border */
+  --border-soft: rgba(255, 255, 255, 0.04);
+  --text: #f5f5f7;                /* Apple-style off-white */
+  --muted: #8e8e93;               /* System gray */
+  --muted-dim: #55555c;           /* Dim gray */
+  --cyan: #0a84ff;                /* Premium blue */
+  --cyan-strong: #0055ff;
+  --green: #30d158;               /* Clean system green */
+  --green-soft: #248a3d;
+  --yellow: #ff9f0a;              /* System orange/yellow */
+  --orange: #ff453a;
+  --red: #ff3b30;
+  --purple: #bf5af2;
+  --line: rgba(255, 255, 255, 0.06);
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --radius-lg: 16px;              /* Elegant modern card corner radius */
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --font-display: "Outfit", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif;
+  --font-body: "Plus Jakarta Sans", "-apple-system", "BlinkMacSystemFont", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Consolas", monospace;
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.2);
+}
+
+/* Custom Scrollbar Styling (Premium Dark Theme) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.02) 0%, transparent 60%),
+    radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+body {
+  width: 100%;
+  max-width: 1600px;
+  padding: 24px;
+}
+
+.app-shell {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+}
+
+.panel {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* Glassmorphic header topbar override */
+.topbar.panel {
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+  padding: 16px 20px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+}
+
+.brand-mark svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px rgba(10, 132, 255, 0.2));
+}
+
+.brand-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.brand-line h1,
+.brand-line p {
+  margin: 0;
+  font-family: var(--font-display);
+}
+
+.brand-line h1 {
+  font-size: 1.8rem;
+  line-height: 1;
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.brand-line p {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: -0.02em;
+}
+
+.brand-subline {
+  margin-top: 4px;
+  color: var(--muted-dim);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-chip {
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.status-chip .label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-chip strong {
+  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.status-icon {
+  font-size: 1.4rem;
+}
+
+.pulse-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #3a3a3c;
+  box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.4);
+}
+
+.pulse-dot.online {
+  background: var(--green);
+  box-shadow: 0 0 12px rgba(48, 209, 88, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(48, 209, 88, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0); }
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.dashboard-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.layout-grid > .safety-panel,
+.layout-grid > .analytics-panel {
+  align-self: start;
+}
+
+.telemetry-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-title {
+  padding: 16px 12px 8px;
+  font-family: var(--font-display);
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.telemetry-grid,
+.command-grid,
+.safety-grid {
+  display: grid;
+  gap: 16px;
+  padding: 12px;
+}
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.command-grid {
+  grid-template-columns: 1fr 1fr;
+}
+
+.safety-grid {
+  grid-template-columns: 1fr 1fr 1.3fr;
+}
+
+.telemetry-card,
+.command-card,
+.safety-card,
+.analytics-card {
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  min-height: 100px;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.telemetry-card:hover,
+.command-card:hover,
+.safety-card:hover,
+.analytics-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), inset 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.telemetry-card {
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+}
+.moisture-card {
+  grid-column: 1;
+  grid-row: 1;
+}
+.water-card {
+  grid-column: 1;
+  grid-row: 2;
+}
+.device-card {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-card {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.single-card-grid {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.heading-icon {
+  color: var(--cyan);
+  display: inline-flex;
+  align-items: center;
+}
+
+.svg-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  vertical-align: middle;
+  display: inline-block;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+
+.gauge-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+  flex: 1;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.gauge {
+  position: relative;
+  width: 200px;
+  height: 140px;
+  border-radius: 100px 100px 15px 15px;
+  background:
+    radial-gradient(circle at center, rgba(0, 0, 0, 0) 44%, rgba(0, 0, 0, 1) 45%),
+    conic-gradient(
+      from 240deg,
+      #ffffff 0deg,
+      rgba(255, 255, 255, 0.15) 240deg,
+      transparent 240deg 360deg
+    );
+  overflow: hidden;
+}
+
+.gauge::before {
+  content: "";
+  position: absolute;
+  inset: 12px 12px 12px;
+  border-radius: inherit;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.gauge::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 18px;
+  height: 70px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 100px 100px 0 0;
+}
+
+.gauge-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 40px;
+  z-index: 2;
+}
+
+.gauge-center strong {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.gauge-center span {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: 2px;
+  transform: translateY(8px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+.gauge-needle {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  width: 3px;
+  height: 72px;
+  border-radius: 99px;
+  transform-origin: 50% calc(100% - 4px);
+  transform: translateX(-50%) rotate(0deg);
+  background: #e8ccd7;
+  box-shadow: 0 0 10px rgba(232, 204, 215, 0.6);
+  z-index: 3;
+}
+
+.gauge-needle::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e8ccd7;
+  transform: translateX(-50%);
+  box-shadow: 0 0 6px rgba(232, 204, 215, 0.8);
+}
+
+.gauge-ticks {
+  display: none;
+}
+
+.status-pill {
+  margin-top: auto;
+  border: 1px solid rgba(48, 209, 88, 0.2);
+  background: rgba(48, 209, 88, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  text-align: center;
+  color: #30d158;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.reservoir-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex: 1;
+}
+
+.reservoir-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.reservoir-meta .level-value {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.reservoir-meta .level-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+.reservoir-visual {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.reservoir {
+  position: relative;
+  width: 64px;
+  height: 120px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8);
+}
+
+.reservoir-fill {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  height: 48%;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  background: linear-gradient(180deg, #0a84ff 0%, #0055ff 100%);
+  box-shadow: 0 0 16px rgba(10, 132, 255, 0.45);
+}
+
+/* Back wave (parallax overlay) */
+.reservoir-fill::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 28'%3E%3Cpath d='M0 15 Q 30 0, 60 15 T 120 15 L 120 28 L 0 28 Z' fill='%230055ff'/%3E%3C/svg%3E");
+  background-size: 50px 12px;
+  background-repeat: repeat-x;
+  opacity: 0.55;
+  animation: wave-move-reverse 3s infinite linear;
+  display: block;
+}
+
+/* Front wave */
+.reservoir-fill::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 28'%3E%3Cpath d='M0 15 Q 30 0, 60 15 T 120 15 L 120 28 L 0 28 Z' fill='%230a84ff'/%3E%3C/svg%3E");
+  background-size: 40px 12px;
+  background-repeat: repeat-x;
+  animation: wave-move 1.8s infinite linear;
+}
+
+@keyframes wave-move {
+  0% { background-position-x: 0px; }
+  100% { background-position-x: 40px; }
+}
+
+@keyframes wave-move-reverse {
+  0% { background-position-x: 0px; }
+  100% { background-position-x: -50px; }
+}
+
+.reservoir-shine {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 5px;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 70%);
+}
+
+.reservoir-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 120px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.distance-readout {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.distance-readout span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.distance-readout strong {
+  display: block;
+  color: var(--cyan);
+  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.bypass-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 12px;
+}
+
+.bypass-row span {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metric-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  margin-top: 10px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.metric-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.metric-row span {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.metric-row strong {
+  font-size: 1.15rem;
+  font-family: var(--font-display);
+  color: #ffffff;
+  text-align: right;
+}
+
+.slider-card,
+.emergency-card,
+.connection-card {
+  grid-column: 1 / -1;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  border-radius: var(--radius-md);
+  padding: 6px;
+  background: #09090b;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(255, 255, 255, 0.04);
+}
+
+.segment {
+  cursor: pointer;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px;
+  background: linear-gradient(180deg, #18181c 0%, #111114 100%);
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  box-shadow: 0 3px 0 #09090b, 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.08s ease;
+  transform: translateY(0);
+}
+
+.segment:hover:not(.active) {
+  background: linear-gradient(180deg, #202025 0%, #151518 100%);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+#autoModeBtn.active {
+  background: linear-gradient(180deg, #0a84ff 0%, #0055ff 100%);
+  box-shadow: 0 1px 0 #002b80, 0 0 16px rgba(10, 132, 255, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  transform: translateY(2px);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+#manualModeBtn.active {
+  background: linear-gradient(180deg, #ff9f0a 0%, #cc7a00 100%);
+  box-shadow: 0 1px 0 #663d00, 0 0 16px rgba(255, 159, 10, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  transform: translateY(2px);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+.mode-caption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.mode-caption strong {
+  color: var(--green);
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.connect-button,
+.ghost-button,
+.emergency-button {
+  cursor: pointer;
+  border: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.connect-button:hover,
+.ghost-button:hover,
+.emergency-button:hover {
+  transform: translateY(-1px);
+}
+
+.action-button {
+  min-height: 72px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.08s ease;
+}
+
+.action-on {
+  background: linear-gradient(180deg, #1e3825 0%, #142419 100%);
+  box-shadow: 0 5px 0 #0a130c, 0 8px 16px rgba(0, 0, 0, 0.45);
+  color: rgba(255, 255, 255, 0.35);
+  transform: translateY(0);
+}
+
+.action-on:hover:not(.active) {
+  background: linear-gradient(180deg, #25472f 0%, #192e20 100%);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.action-on.active {
+  background: linear-gradient(180deg, #30d158 0%, #248a3d 100%);
+  box-shadow: 0 1px 0 #10411a, 0 0 20px rgba(48, 209, 88, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  transform: translateY(4px);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.action-on.active:hover {
+  box-shadow: 0 1px 0 #10411a, 0 0 28px rgba(48, 209, 88, 0.65), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.action-off {
+  background: linear-gradient(180deg, #381e1e 0%, #241414 100%);
+  box-shadow: 0 5px 0 #130a0a, 0 8px 16px rgba(0, 0, 0, 0.45);
+  color: rgba(255, 255, 255, 0.35);
+  transform: translateY(0);
+}
+
+.action-off:hover:not(.active) {
+  background: linear-gradient(180deg, #472525 0%, #2e1919 100%);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.action-off.active {
+  background: linear-gradient(180deg, #ff453a 0%, #ff3b30 100%);
+  box-shadow: 0 1px 0 #8c1d18, 0 0 20px rgba(255, 69, 58, 0.45), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  transform: translateY(4px);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.action-off.active:hover {
+  box-shadow: 0 1px 0 #8c1d18, 0 0 28px rgba(255, 69, 58, 0.65), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider-value {
+  min-width: 90px;
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+  background: var(--bg-elevated);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.slider-value.threshold {
+  color: #ffffff;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin-top: 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+}
+
+#thresholdSlider::-webkit-slider-runnable-track {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-top: -7px;
+  background: #ffffff;
+  border: 2px solid #121214;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
+}
+
+#thresholdSlider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-top: -7px;
+  background: #ffffff;
+  border: 2px solid #121214;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+#thresholdSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.6);
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  color: #edf4fa;
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+.slider-note {
+  margin: 12px 0 0;
+  color: #cfd9e6;
+  font-size: 0.98rem;
+}
+
+.emergency-button {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #ff453a 0%, #ff3b30 100%);
+  color: white;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.2);
+  border: none;
+}
+
+.field-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.auto-link-copy {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.auto-link-copy strong {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.auto-link-copy span {
+  color: var(--cyan);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  word-break: break-all;
+}
+
+.connection-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.connection-controls input {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  outline: none;
+  font-family: var(--font-mono);
+}
+
+.connect-button {
+  min-width: 110px;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.bypass-button {
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 1.0rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.bypass-button.active {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(255, 0, 127, 0.25);
+}
+
+.connection-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.connection-footer span {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+}
+
+.advanced-connection {
+  margin-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 12px;
+}
+
+.advanced-connection summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.92rem;
+  list-style: none;
+}
+
+.advanced-connection summary::-webkit-details-marker {
+  display: none;
+}
+
+.advanced-connection[open] summary {
+  color: #dce8f4;
+  margin-bottom: 12px;
+}
+
+.ghost-button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #e5edf8;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.tank-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-md);
+  padding: 24px 16px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(48, 209, 88, 0.15);
+  background: rgba(48, 209, 88, 0.03);
+}
+
+.tank-state.empty {
+  border-color: rgba(255, 69, 58, 0.18);
+  background: rgba(255, 69, 58, 0.03);
+}
+
+.tank-state strong {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--green);
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 16px rgba(48, 209, 88, 0.3);
+}
+
+.tank-state.empty strong {
+  color: var(--red);
+  text-shadow: 0 0 16px rgba(255, 69, 58, 0.3);
+}
+
+.tank-state span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.alarm-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-md);
+  padding: 24px 16px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.alarm-status.alert {
+  border-color: rgba(255, 69, 58, 0.2);
+  background: rgba(255, 69, 58, 0.03);
+}
+
+.alarm-status strong {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 12px rgba(48, 209, 88, 0.25);
+  letter-spacing: -0.01em;
+}
+
+.alarm-status.alert strong {
+  color: var(--red);
+  text-shadow: 0 0 12px rgba(255, 69, 58, 0.25);
+}
+
+.alarm-status span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.log-list {
+  max-height: 160px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.log-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.log-entry:last-child {
+  border-bottom: 0;
+}
+
+.log-time {
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.log-text {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.log-text.info { color: #f5f5f7; }
+.log-text.good { color: var(--green); }
+.log-text.warn { color: var(--yellow); }
+.log-text.error { color: var(--red); }
+.log-text.action { color: var(--cyan); }
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.chart-title {
+  font-family: var(--font-display);
+  font-size: 1.42rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chart-subtitle {
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 0.95rem;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 18px;
+  color: #d7e1ec;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.legend-swatch {
+  width: 24px;
+  height: 3px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.moisture-line {
+  background: #19a5ff;
+}
+
+.threshold-line {
+  background: #69ff36;
+}
+
+#historyChart {
+  width: 100%;
+  height: 360px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.05);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.disabled {
+  opacity: 0.48;
+  pointer-events: none;
+}
+
+.phone-blocker {
+  display: none;
+}
+
+@media (max-width: 1450px) {
+  .telemetry-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+  .safety-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  html, body {
+    padding: 12px;
+  }
+  
+  body {
+    padding: 12px;
+  }
+
+  .moisture-card,
+  .water-card,
+  .device-card {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+  
+  .app-shell {
+    gap: 16px;
+  }
+
+  .topbar.panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .brand-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .brand-line h1 {
+    font-size: 2.2rem;
+  }
+  
+  .brand-line p {
+    font-size: 1.5rem;
+  }
+  
+  .divider {
+    display: none;
+  }
+  
+  .header-status {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+  
+  .status-chip {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 0 0 0;
+  }
+
+  .layout-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .dashboard-col {
+    display: contents;
+  }
+  
+  .telemetry-grid,
+  .command-grid,
+  .safety-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 12px 0;
+  }
+  
+  .telemetry-card,
+  .command-card,
+  .safety-card,
+  .analytics-card {
+    min-height: auto;
+    padding: 20px;
+  }
+
+  .app-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .footer-credit {
+    text-align: left;
+    width: 100%;
+  }
+  
+  .phone-blocker {
+    display: none !important;
+  }
+  
+  .credits-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+  /* Premium Footer styling */
+  .app-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .footer-team {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  .team-title {
+    font-weight: 700;
+    color: #30d158;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+  }
+  .team-members {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .team-member {
+    position: relative;
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 0.88rem;
+  }
+  .team-member:not(:last-child)::after {
+    content: "•";
+    margin-left: 12px;
+    color: rgba(255, 255, 255, 0.3);
+  }
+  .footer-credit {
+    text-align: right;
+  }
+  .footer-credit a {
+    color: #30d158;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(48, 209, 88, 0.08);
+    border: 1px solid rgba(48, 209, 88, 0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: green-pulse 1.8s infinite alternate;
+    display: inline-block;
+  }
+  .footer-credit a:hover {
+    color: #ffffff;
+    background: rgba(48, 209, 88, 0.3);
+    border-color: #30d158;
+    box-shadow: 0 0 16px rgba(48, 209, 88, 0.6);
+    transform: translateY(-1px);
+  }
+  /* Bento Credits Styling */
+  .analytics-panel,
+  .credits-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .credits-card {
+    background: var(--panel);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+  }
+  .credits-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), inset 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  .credits-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 20px;
+    align-items: center;
+    flex: 1;
+  }
+  .credits-section-title {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .credits-team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .credits-member {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .credits-member::before {
+    content: "✦";
+    color: var(--cyan);
+    font-size: 0.8rem;
+  }
+  .credits-dev-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 14px 16px;
+    padding-right: 68px;
+    height: 82px;
+    width: 240px;
+    margin: 0 auto;
+    border-radius: var(--radius-md);
+    background: rgba(48, 209, 88, 0.02);
+    border: 1px solid rgba(48, 209, 88, 0.22);
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 0 12px rgba(48, 209, 88, 0.05);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .credits-dev-box:hover {
+    border-color: rgba(48, 209, 88, 0.45);
+    background: rgba(48, 209, 88, 0.05);
+    box-shadow: 0 8px 24px rgba(48, 209, 88, 0.15), inset 0 0 16px rgba(48, 209, 88, 0.08);
+  }
+  .dev-text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    width: 100%;
+  }
+  .dev-by-label {
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .dev-name {
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #30d158;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 12px rgba(48, 209, 88, 0.65);
+    line-height: 1.1;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+  }
+  .dev-name:hover {
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(48, 209, 88, 0.85);
+  }
+  .github-badge {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+  }
+  .github-badge img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    margin-bottom: -3px;
+  }
+  .github-badge:hover {
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.45);
+  }
+
+  /* Credits divider between stacked sections */
+  .credits-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 20px 0;
+  }
+  
+  /* Backend Info Layout */
+  .backend-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+  }
+  .info-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .info-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-top: 2px;
+  }
+  .info-text strong {
+    display: block;
+    color: #ffffff;
+    font-family: var(--font-display);
+    font-size: 0.98rem;
+    margin-bottom: 4px;
+  }
+  .info-text p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar panel">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" role="img">
+            <path d="M31.5 5C22 19.5 14 29.4 14 41.5C14 52 22.5 60 33 60S52 52 52 41.5C52 29.3 42.8 18.8 31.5 5Z" fill="none" stroke="#15a7ff" stroke-width="3.5" stroke-linejoin="round"/>
+            <path d="M33 56c-8.9 0-16-7.1-16-16C17 29.9 23.6 21.3 31.6 9.2C40.8 21 49 30.4 49 40c0 8.9-7.1 16-16 16Z" fill="url(#dropGlow)" opacity="0.18"/>
+            <path d="M38 33.5c-6.1 1.8-12 7.7-13.5 13.7c5.9 4 14.5 3.3 19.7-1.8c4.5-4.4 5.8-10.9 3.7-16.2c-3.2-.4-6.6 1-9.9 4.3Z" fill="#6df036"/>
+            <path d="M29 48c2.4-5.8 6.1-10.7 11.1-14.8" fill="none" stroke="#1e5f24" stroke-width="2.2" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="dropGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#15a7ff"/>
+                <stop offset="100%" stop-color="#0c4b8f"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <div class="brand-line">
+            <h1>AquaNexus Pro</h1>
+            <span class="divider"></span>
+            <p>Smart Irrigation System</p>
+          </div>
+          <div class="brand-subline">
+            Universal control room for Project Flour
+          </div>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <div class="status-chip">
+          <svg class="svg-icon status-wifi-icon" viewBox="0 0 24 24">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+            <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+            <line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3" />
+          </svg>
+          <div>
+            <span class="label">Wi-Fi Strength</span>
+            <strong id="wifiStrengthText">No Signal</strong>
+          </div>
+        </div>
+        <div class="status-chip">
+          <span class="pulse-dot" id="systemPulse"></span>
+          <div>
+            <span class="label">System State</span>
+            <strong id="systemStateText">Offline</strong>
+          </div>
+        </div>
+        <div class="status-chip sync-chip">
+          <span class="label">Last Data Sync</span>
+          <strong id="lastSyncText">Waiting for data</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout-grid">
+      <div class="dashboard-col">
+        <section class="panel telemetry-panel">
+          <div class="panel-title">1. Live Telemetry</div>
+          <div class="telemetry-grid">
+            <article class="telemetry-card moisture-card">
+              <div class="card-heading"><span class="heading-icon">🌿</span>Soil Moisture</div>
+              <div class="gauge-wrap">
+                <div class="gauge" id="moistureGauge">
+                  <div class="gauge-ticks">
+                    <span style="--angle:-120deg;--label:'0'"></span>
+                    <span style="--angle:-60deg;--label:'25'"></span>
+                    <span style="--angle:0deg;--label:'50'"></span>
+                    <span style="--angle:60deg;--label:'75'"></span>
+                    <span style="--angle:120deg;--label:'100'"></span>
+                  </div>
+                  <div class="gauge-needle" id="moistureNeedle"></div>
+                  <div class="gauge-center">
+                    <strong id="moistureValue">42%</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="status-pill" id="moistureStatusPill">Status: Optimal</div>
+            </article>
+
+            <article class="telemetry-card water-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7z" />
+                  </svg>
+                </span>
+                Water Reservoir
+              </div>
+              <div class="reservoir-block">
+                <div class="reservoir-meta">
+                  <div class="level-value" id="waterLevelValue">48%</div>
+                  <div class="level-label">Reservoir Level</div>
+                  <div class="distance-readout">
+                    <span>Tank Status</span>
+                    <strong id="tankDistanceText">Distance data not available</strong>
+                  </div>
+                </div>
+                <div class="reservoir-visual">
+                  <div class="reservoir">
+                    <div class="reservoir-fill" id="reservoirFill"></div>
+                    <div class="reservoir-shine"></div>
+                  </div>
+                  <div class="reservoir-scale">
+                    <span>100%</span>
+                    <span>75%</span>
+                    <span>50%</span>
+                    <span>25%</span>
+                    <span>0%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bypass-row">
+                <span>Sensor Bypass</span>
+                <button id="bypassUsBtn" class="bypass-button">Bypass Active</button>
+              </div>
+            </article>
+
+            <article class="telemetry-card device-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                  </svg>
+                </span>
+                Device and Network
+              </div>
+              <div class="metric-stack">
+                <div class="metric-row">
+                  <span>Connection</span>
+                  <strong id="connectionText">Disconnected</strong>
+                </div>
+                <div class="metric-row">
+                  <span>Mode</span>
+                  <strong id="modeText">Auto</strong>
+                </div>
+                <div class="metric-row">
+                  <span>Pump State</span>
+                  <strong id="pumpStateText">OFF</strong>
+                </div>
+                <div class="metric-row">
+                  <span>Signal</span>
+                  <strong id="rssiText">-- dBm</strong>
+                </div>
+                <div class="metric-row">
+                  <span>Uptime</span>
+                  <strong id="uptimeText">00h 00m</strong>
+                </div>
+                <div class="metric-row">
+                  <span>Firmware</span>
+                  <strong id="firmwareText">--</strong>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel safety-panel">
+          <div class="panel-title">2. Safety and Alerts</div>
+          <div class="safety-grid">
+            <article class="safety-card tank-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                    <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+                  </svg>
+                </span>
+                Tank Status
+              </div>
+              <div class="tank-state ok" id="tankStateBox">
+                <strong id="tankStateText">OK</strong>
+                <span id="tankStateSubtext">Water level is sufficient</span>
+              </div>
+            </article>
+
+            <article class="safety-card alarm-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
+                </span>
+                Alarm State
+              </div>
+              <div class="alarm-status">
+                <strong id="alarmStateText">Monitoring</strong>
+                <span id="alarmStateSubtext">No active alerts</span>
+              </div>
+            </article>
+
+            <article class="safety-card log-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                  </svg>
+                </span>
+                Safety Log
+              </div>
+              <div class="log-list" id="logList"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel analytics-panel">
+          <div class="panel-title">3. Analytics</div>
+          <div class="single-card-grid">
+            <article class="analytics-card">
+              <div class="analytics-header">
+                <div>
+                  <div class="chart-title">Soil Moisture History</div>
+                  <div class="chart-subtitle">Local browser history captured from live ESP32 readings</div>
+                </div>
+                <div class="chart-legend">
+                  <span class="legend-item"><i class="legend-swatch moisture-line"></i>Moisture (%)</span>
+                  <span class="legend-item"><i class="legend-swatch threshold-line"></i>Threshold</span>
+                </div>
+              </div>
+              <canvas id="historyChart" width="960" height="360" aria-label="Moisture history chart"></canvas>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <div class="dashboard-col">
+        <section class="panel command-panel">
+          <div class="panel-title">4. Command Center</div>
+          <div class="command-grid">
+            <article class="command-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                  </svg>
+                </span>
+                Pump Control Mode
+              </div>
+              <div class="segmented-control">
+                <button class="segment" id="manualModeBtn" data-mode="manual">Manual</button>
+                <button class="segment active" id="autoModeBtn" data-mode="auto">Auto</button>
+              </div>
+              <div class="mode-caption">Active Mode: <strong id="activeModeCaption">Automatic (ESP32)</strong></div>
+            </article>
+
+            <article class="command-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5" />
+                    <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6" />
+                    <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8.5" />
+                    <path d="M6 14.5a3.5 3.5 0 0 0 7 0v-4" />
+                    <path d="M22 14.5a3.5 3.5 0 0 1-3.5 3.5H13" />
+                  </svg>
+                </span>
+                Manual Override
+              </div>
+              <div class="action-row">
+                <button class="action-button action-on" id="pumpOnBtn">
+                  <span>Pump On</span>
+                </button>
+                <button class="action-button action-off" id="pumpOffBtn">
+                  <span>Pump Off</span>
+                </button>
+              </div>
+            </article>
+
+            <article class="command-card slider-card">
+              <div class="slider-head">
+                <div class="card-heading">
+                  <span class="heading-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                      <path d="M2 12c.5-1.5 2.5-3 5-3s4.5 1.5 5 3 2.5 3 5 3 4.5-1.5 5-3" />
+                      <path d="M2 17c.5-1.5 2.5-3 5-3s4.5 1.5 5 3 2.5 3 5 3 4.5-1.5 5-3" stroke-opacity="0.5" />
+                    </svg>
+                  </span>
+                  Irrigation Intensity (PWM)
+                </div>
+                <strong class="slider-value" id="pwmValueText">200 / 255</strong>
+              </div>
+              <input type="range" id="pwmSlider" min="0" max="255" value="200" />
+              <div class="slider-scale"><span>0</span><span>255</span></div>
+            </article>
+
+            <article class="command-card slider-card">
+              <div class="slider-head">
+                <div class="card-heading">
+                  <span class="heading-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                      <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7z" />
+                      <path d="M12 12v4" />
+                      <path d="M10 14h4" />
+                    </svg>
+                  </span>
+                  Moisture Threshold (Auto Start)
+                </div>
+                <strong class="slider-value threshold" id="thresholdValueText">40%</strong>
+              </div>
+              <input type="range" id="thresholdSlider" min="0" max="100" value="40" />
+              <div class="slider-scale"><span>0%</span><span>100%</span></div>
+              <p class="slider-note" id="thresholdNote">Pump will start automatically when moisture drops below 40%</p>
+            </article>
+
+            <article class="command-card emergency-card">
+              <div class="slider-head">
+                <div class="card-heading">
+                  <span class="heading-icon">
+                    <svg class="svg-icon" viewBox="0 0 24 24">
+                      <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
+                      <line x1="4" y1="12" x2="20" y2="12" />
+                    </svg>
+                  </span>
+                  Emergency Stop
+                </div>
+              </div>
+              <button class="emergency-button" id="emergencyBtn">Immediate Pump Stop</button>
+            </article>
+
+            <article class="command-card connection-card">
+              <div class="card-heading">
+                <span class="heading-icon">
+                  <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                    <line x1="12" y1="2" x2="12" y2="12" />
+                  </svg>
+                </span>
+                ESP32 Link
+              </div>
+              <div class="auto-link-copy">
+                <strong>Auto Link Target</strong>
+                <span id="socketUrlText">ws://flura.local:81/ws</span>
+              </div>
+              <div class="connection-footer">
+                <button id="connectBtn" class="connect-button">Reconnect</button>
+                <button id="disconnectBtn" class="ghost-button">Disconnect</button>
+              </div>
+              <details class="advanced-connection">
+                <summary>Advanced manual address</summary>
+                <label class="field-label" for="ipInput">Fallback ESP32 host or IP</label>
+                <div class="connection-controls">
+                  <input id="ipInput" type="text" placeholder="192.168.1.50" value="flura.local" />
+                </div>
+              </details>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel credits-panel">
+          <div class="panel-title">
+            <svg class="svg-icon" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Project Contributors
+          </div>
+          <div class="single-card-grid">
+            <article class="credits-card">
+              <!-- Upper Part: How Web Backend Works -->
+              <div class="team-section">
+                <span class="credits-section-title">Web Backend (How It Works)</span>
+                <div class="backend-info-grid">
+                  <div class="info-item">
+                    <span class="info-icon">
+                      <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M12 2v6" />
+                        <path d="M6 8h12v4a6 6 0 0 1-6 6v4" />
+                        <path d="M10 22h4" />
+                      </svg>
+                    </span>
+                    <div class="info-text">
+                      <strong>WebSocket & Blynk Gateways</strong>
+                      <p>Establishes a persistent, bi-directional socket link directly to your local ESP32 (port 81) for sub-10ms telemetry updates, paired with <a href="https://blynk.io" target="_blank" style="color: var(--cyan); text-decoration: none; font-weight: 600;">Blynk Cloud</a> integration for secondary mobile control and remote synchronization.</p>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-icon">
+                      <svg class="svg-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="2" />
+                        <path d="M12 2a10 10 0 0 1 10 10" />
+                        <path d="M12 6a6 6 0 0 1 6 6" />
+                        <path d="M8 12a4 4 0 0 1 4-4" />
+                        <path d="M4 12a8 8 0 0 1 8-8" />
+                        <path d="M12 12v8" />
+                        <path d="M10 22h4" />
+                      </svg>
+                    </span>
+                    <div class="info-text">
+                      <strong>Smart Auto-Discovery</strong>
+                      <p>Performs network scans tracking <code>flura.local</code>, dynamically linking hardware nodes to the web control room without manual IP routing.</p>
+                    </div>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-icon">
+                      <svg class="svg-icon" viewBox="0 0 24 24">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                      </svg>
+                    </span>
+                    <div class="info-text">
+                      <strong>Vercel Edge & Local Cache</strong>
+                      <p>Hosted on <a href="https://vercel.com" target="_blank" style="color: var(--green); text-decoration: none; font-weight: 600;">Vercel</a>'s high-speed global edge network for instant load times, utilizing local web storage to persist connection states, customized thresholds, and logs.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="credits-divider"></div>
+
+              <!-- Bottom Part: Credits -->
+              <div class="credits-grid">
+                <div class="team-section">
+                  <span class="credits-section-title">Project Team</span>
+                  <div class="credits-team-list">
+                    <div class="credits-member">Ankita Das</div>
+                    <div class="credits-member">Ananya Chakraborty</div>
+                    <div class="credits-member">Dipankar Saha</div>
+                    <div class="credits-member">Debraj Ghosh</div>
+                    <div class="credits-member">Asif Sarwar</div>
+                  </div>
+                </div>
+                <div class="dev-section">
+                  <div class="credits-dev-box">
+                    <div class="dev-text-container">
+                      <span class="dev-by-label">DEVELOPED BY</span>
+                      <a href="https://mxsourav.vercel.app/" target="_blank" class="dev-name">MX100RAV</a>
+                    </div>
+                    <a href="https://github.com/mxsourav" target="_blank" class="github-badge">
+                      <img src="github-logo.png" alt="GitHub" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer class="app-footer">
+      <div>© 2026 AquaNexus. All rights reserved.</div>
+      <div>Project Flour v2.4.3</div>
+    </footer>
+  </div>
+
+  <div class="phone-blocker">
+    <div class="phone-blocker-card">
+      <h2>Desktop / Tablet Only</h2>
+      <p>This control room is intentionally built for Windows and large tablet screens. Open it on a wider display for the full dashboard.</p>
+    </div>
+  </div>
+
+  <script>
+(function () {
+  const STORAGE_KEYS = {
+    ip: "aquanexus_dashboard_ip",
+    history: "aquanexus_dashboard_history",
+    logs: "aquanexus_dashboard_logs",
+  };
+
+  const DEFAULT_HOST = "flura.local";
+  const STALE_DEFAULT_HOSTS = new Set(["10.51.185.164"]);
+  const SAVED_HOST = normalizeHost(localStorage.getItem(STORAGE_KEYS.ip));
+  const PAGE_HOST = window.location.hostname &&
+    !["localhost", "127.0.0.1"].includes(window.location.hostname)
+      ? window.location.hostname
+      : "";
+  const DISCOVERY_HOSTS = [
+    STALE_DEFAULT_HOSTS.has(SAVED_HOST) ? "" : SAVED_HOST,
+    PAGE_HOST,
+    DEFAULT_HOST,
+    "flura.local",
+    "10.51.185.164",
+    "192.168.43.2",
+    "192.168.43.3",
+    "192.168.43.4",
+    "172.20.10.2",
+    "172.20.10.3",
+    "192.168.137.2",
+    "192.168.137.3",
+  ].map(normalizeHost).filter(Boolean);
+
+  const state = {
+    ws: null,
+    connected: false,
+    ip: STALE_DEFAULT_HOSTS.has(SAVED_HOST) ? DEFAULT_HOST : (SAVED_HOST || PAGE_HOST || DEFAULT_HOST),
+    device: "Flaura",
+    firmware: "--",
+    lastSync: null,
+    history: loadJson(STORAGE_KEYS.history, []),
+    logs: loadJson(STORAGE_KEYS.logs, []),
+    sensor: {
+      moisture: 42,
+      water_lvl: 48,
+      rssi: -68,
+      pump_on: false,
+      tank_empty: false,
+      mode: "auto",
+      threshold: 40,
+      pwm: 200,
+      uptime: 0,
+      bypass_us: false,
+    },
+  };
+
+  const els = {
+    ipInput: $("#ipInput"),
+    connectBtn: $("#connectBtn"),
+    disconnectBtn: $("#disconnectBtn"),
+    socketUrlText: $("#socketUrlText"),
+    wifiStrengthText: $("#wifiStrengthText"),
+    systemStateText: $("#systemStateText"),
+    systemPulse: $("#systemPulse"),
+    lastSyncText: $("#lastSyncText"),
+    moistureValue: $("#moistureValue"),
+    moistureNeedle: $("#moistureNeedle"),
+    moistureStatusPill: $("#moistureStatusPill"),
+    waterLevelValue: $("#waterLevelValue"),
+    reservoirFill: $("#reservoirFill"),
+    tankDistanceText: $("#tankDistanceText"),
+    bypassUsBtn: $("#bypassUsBtn"),
+    connectionText: $("#connectionText"),
+    modeText: $("#modeText"),
+    pumpStateText: $("#pumpStateText"),
+    rssiText: $("#rssiText"),
+    uptimeText: $("#uptimeText"),
+    firmwareText: $("#firmwareText"),
+    activeModeCaption: $("#activeModeCaption"),
+    manualModeBtn: $("#manualModeBtn"),
+    autoModeBtn: $("#autoModeBtn"),
+    pumpOnBtn: $("#pumpOnBtn"),
+    pumpOffBtn: $("#pumpOffBtn"),
+    pwmSlider: $("#pwmSlider"),
+    thresholdSlider: $("#thresholdSlider"),
+    pwmValueText: $("#pwmValueText"),
+    thresholdValueText: $("#thresholdValueText"),
+    thresholdNote: $("#thresholdNote"),
+    emergencyBtn: $("#emergencyBtn"),
+    tankStateBox: $("#tankStateBox"),
+    tankStateText: $("#tankStateText"),
+    tankStateSubtext: $("#tankStateSubtext"),
+    alarmStateWrap: $(".alarm-status"),
+    alarmStateText: $("#alarmStateText"),
+    alarmStateSubtext: $("#alarmStateSubtext"),
+    logList: $("#logList"),
+    historyChart: $("#historyChart"),
+  };
+
+  init();
+
+  function init() {
+    els.ipInput.value = state.ip;
+    els.socketUrlText.textContent = socketUrl(state.ip);
+
+    ensureSeedLogs();
+    renderLogs();
+    renderAll();
+    attachEvents();
+    drawChart();
+    autoConnect();
+  }
+
+  function attachEvents() {
+    els.ipInput.addEventListener("input", () => {
+      const nextHost = normalizeHost(els.ipInput.value || DEFAULT_HOST);
+      state.ip = nextHost;
+      localStorage.setItem(STORAGE_KEYS.ip, nextHost);
+      els.socketUrlText.textContent = socketUrl(nextHost);
+    });
+
+    els.connectBtn.addEventListener("click", () => {
+      const host = normalizeHost(els.ipInput.value || DEFAULT_HOST);
+      connectToHost(host, true);
+    });
+
+    els.disconnectBtn.addEventListener("click", () => {
+      disconnect(true);
+    });
+
+    els.manualModeBtn.addEventListener("click", () => {
+      sendCommand("set_mode", "manual");
+      state.sensor.mode = "manual";
+      pushLog("action", "Requested manual mode.");
+      renderAll();
+    });
+
+    els.autoModeBtn.addEventListener("click", () => {
+      sendCommand("set_mode", "auto");
+      state.sensor.mode = "auto";
+      pushLog("action", "Requested auto mode.");
+      renderAll();
+    });
+
+    els.pumpOnBtn.addEventListener("click", () => {
+      sendCommand("pump_start");
+      pushLog("action", "Manual pump start requested.");
+    });
+
+    els.bypassUsBtn.addEventListener("click", () => {
+      const isBypassed = !state.sensor.bypass_us;
+      sendCommand("set_bypass_us", isBypassed);
+      pushLog("action", `Requested ultrasonic guard ${isBypassed ? "bypass" : "enable"}.`);
+    });
+
+    els.pumpOffBtn.addEventListener("click", () => {
+      sendCommand("pump_stop");
+      pushLog("action", "Manual pump stop requested.");
+    });
+
+    els.emergencyBtn.addEventListener("click", () => {
+      sendCommand("emergency_stop");
+      pushLog("error", "Emergency stop triggered from dashboard.");
+    });
+
+    els.pwmSlider.addEventListener("input", () => {
+      state.sensor.pwm = Number(els.pwmSlider.value);
+      renderAll();
+    });
+
+    els.pwmSlider.addEventListener("change", () => {
+      const pwm = Number(els.pwmSlider.value);
+      sendCommand("set_pwm", pwm);
+      pushLog("action", `PWM updated to ${pwm}/255.`);
+    });
+
+    els.thresholdSlider.addEventListener("input", () => {
+      state.sensor.threshold = Number(els.thresholdSlider.value);
+      renderAll();
+    });
+
+    els.thresholdSlider.addEventListener("change", () => {
+      const threshold = Number(els.thresholdSlider.value);
+      sendCommand("set_threshold", threshold);
+      pushLog("action", `Auto-start threshold set to ${threshold}%.`);
+    });
+
+    window.addEventListener("resize", drawChart);
+  }
+
+  async function autoConnect() {
+    if (state.connected) {
+      return;
+    }
+
+    const hosts = Array.from(new Set(
+      [state.ip, PAGE_HOST, DEFAULT_HOST, ...DISCOVERY_HOSTS].map(normalizeHost).filter(Boolean)
+    ));
+    setConnectionState("connecting");
+
+    for (const host of hosts) {
+      const ok = await connectToHost(host, false);
+      if (ok) {
+        return;
+      }
+    }
+
+    pushLog("warn", "Auto-connect could not find the ESP32 yet. If needed, use Advanced manual address.");
+    setConnectionState("offline");
+    renderAll();
+  }
+
+  function connectToHost(host, verbose) {
+    return new Promise((resolve) => {
+      const cleanHost = normalizeHost(host);
+      if (!cleanHost) {
+        resolve(false);
+        return;
+      }
+
+      disconnect(false, true);
+      state.ip = cleanHost;
+      els.ipInput.value = cleanHost;
+      els.socketUrlText.textContent = socketUrl(cleanHost);
+      localStorage.setItem(STORAGE_KEYS.ip, cleanHost);
+      setConnectionState("connecting");
+
+      if (verbose) {
+        pushLog("info", `Connecting to ${socketUrl(cleanHost)} ...`);
+      }
+
+      let settled = false;
+      let ws;
+
+      try {
+        ws = new WebSocket(socketUrl(cleanHost));
+      } catch (_) {
+        resolve(false);
+        return;
+      }
+
+      const timeout = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        try { ws.close(); } catch (_) {}
+        resolve(false);
+      }, 1800);
+
+      ws.addEventListener("open", () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        state.ws = ws;
+        state.connected = true;
+        setConnectionState("online");
+        pushLog("good", `${verbose ? "Connected" : "Auto-connected"} to ${socketUrl(cleanHost)}.`);
+        wireLiveSocket(ws);
+        renderAll();
+        resolve(true);
+      });
+
+      ws.addEventListener("error", () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        try { ws.close(); } catch (_) {}
+        resolve(false);
+      });
+    });
+  }
+
+  function wireLiveSocket(ws) {
+    ws.addEventListener("close", () => {
+      const wasConnected = state.connected;
+      state.connected = false;
+      state.ws = null;
+      setConnectionState("offline");
+      if (wasConnected) {
+        pushLog("warn", "ESP32 connection closed. Retrying auto-link...");
+        renderAll();
+        setTimeout(autoConnect, 1200);
+      } else {
+        renderAll();
+      }
+    });
+
+    ws.addEventListener("error", () => {
+      state.connected = false;
+      state.ws = null;
+      setConnectionState("offline");
+      renderAll();
+    });
+
+    ws.addEventListener("message", (event) => {
+      handleMessage(event.data);
+    });
+  }
+
+  function disconnect(logIt = true, silent = false) {
+    if (state.ws) {
+      try {
+        state.ws.close();
+      } catch (_) {}
+    }
+    state.ws = null;
+    state.connected = false;
+    if (!silent) {
+      setConnectionState("offline");
+    }
+    if (logIt) {
+      pushLog("info", "Disconnected from ESP32.");
+    }
+    renderAll();
+  }
+
+  function handleMessage(raw) {
+    let msg;
+    try {
+      msg = JSON.parse(raw);
+    } catch (_) {
+      pushLog("error", "Received invalid JSON from ESP32.");
+      return;
+    }
+
+    if (msg.type === "welcome") {
+      state.device = msg.device || state.device;
+      state.firmware = msg.fw || state.firmware;
+      pushLog("good", `Device handshake complete: ${state.device} FW ${state.firmware}.`);
+    } else if (msg.type === "sensor_data") {
+      state.sensor = { ...state.sensor, ...msg };
+      state.lastSync = new Date();
+      recordHistory(msg);
+    } else if (msg.type === "alert") {
+      pushLog(msg.alert === "tank_empty" ? "error" : "warn", msg.message || `Alert: ${msg.alert}`);
+    } else if (msg.type === "ack") {
+      pushLog("good", `ESP32 acknowledged ${msg.cmd}.`);
+    } else if (msg.type === "error") {
+      pushLog("error", msg.msg || "ESP32 reported an error.");
+    }
+
+    renderAll();
+  }
+
+  function recordHistory(msg) {
+    state.history.push({
+      t: Date.now(),
+      moisture: Number(msg.moisture ?? state.sensor.moisture ?? 0),
+      threshold: Number(msg.threshold ?? state.sensor.threshold ?? 40),
+      water: Number(msg.water_lvl ?? state.sensor.water_lvl ?? 0),
+    });
+
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    state.history = state.history.filter((item) => item.t >= oneDayAgo);
+    localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(state.history));
+    drawChart();
+  }
+
+  function renderAll() {
+    const s = state.sensor;
+    const moisture = clamp(Number(s.moisture || 0), 0, 100);
+    const water = clamp(Number(s.water_lvl || 0), 0, 100);
+    const threshold = clamp(Number(s.threshold || 40), 0, 100);
+    const pwm = clamp(Number(s.pwm || 0), 0, 255);
+
+    els.moistureValue.textContent = `${moisture}%`;
+    els.moistureNeedle.style.transform = `translateX(-50%) rotate(${mapRange(moisture, 0, 100, -120, 120)}deg)`;
+    els.moistureStatusPill.textContent = `Status: ${moistureStatusLabel(moisture)}`;
+    els.moistureStatusPill.style.color = moistureStatusColor(moisture);
+    els.moistureStatusPill.style.borderColor = alpha(moistureStatusColor(moisture), 0.26);
+    els.moistureStatusPill.style.background = alpha(moistureStatusColor(moisture), 0.11);
+
+    els.waterLevelValue.textContent = `${water}%`;
+    els.reservoirFill.style.height = `${Math.max(4, water)}%`;
+    
+    const bypassActive = !!s.bypass_us;
+    els.bypassUsBtn.textContent = bypassActive ? "Guard Bypassed" : "Guard Active";
+    els.bypassUsBtn.classList.toggle("active", bypassActive);
+
+    if (bypassActive) {
+      els.tankDistanceText.textContent = "Guard Bypassed (Safety Ignored)";
+    } else {
+      els.tankDistanceText.textContent = s.tank_empty ? "Tank below safe reserve" : "Water level within safe range";
+    }
+
+    els.connectionText.textContent = state.connected ? "Connected" : "Disconnected";
+    els.modeText.textContent = titleCase(s.mode || "auto");
+    els.pumpStateText.textContent = s.pump_on ? "ON" : "OFF";
+    els.pumpStateText.style.color = s.pump_on ? "#71ff3b" : "#f1f6ff";
+    els.rssiText.textContent = Number.isFinite(s.rssi) ? `${s.rssi} dBm` : "-- dBm";
+    els.uptimeText.textContent = formatUptime(s.uptime || 0);
+    els.firmwareText.textContent = state.firmware;
+
+    els.wifiStrengthText.textContent = signalStrengthLabel(s.rssi);
+    els.systemStateText.textContent = state.connected ? "System Online" : "System Offline";
+    els.lastSyncText.textContent = state.lastSync ? formatTimestamp(state.lastSync) : "Waiting for data";
+    els.socketUrlText.textContent = socketUrl(state.ip || DEFAULT_HOST);
+
+    els.pwmSlider.value = String(pwm);
+    els.thresholdSlider.value = String(threshold);
+    els.pwmValueText.textContent = `${pwm} / 255`;
+    els.thresholdValueText.textContent = `${threshold}%`;
+    els.thresholdNote.textContent = `Pump will start automatically when moisture drops below ${threshold}%`;
+    els.activeModeCaption.textContent = s.mode === "manual" ? "Manual override active" : "Automatic (ESP32)";
+
+    els.manualModeBtn.classList.toggle("active", s.mode === "manual");
+    els.autoModeBtn.classList.toggle("active", s.mode !== "manual");
+    els.pumpOnBtn.classList.toggle("active", s.pump_on);
+    els.pumpOffBtn.classList.toggle("active", !s.pump_on);
+    els.systemPulse.classList.toggle("online", state.connected);
+
+    if (s.tank_empty) {
+      els.tankStateBox.classList.add("empty");
+      els.tankStateText.textContent = "LOW";
+      els.tankStateSubtext.textContent = "Refill required before irrigation";
+      els.alarmStateWrap.classList.add("alert");
+      els.alarmStateText.textContent = "Tank Empty";
+      els.alarmStateSubtext.textContent = "Pump safety lock is active";
+    } else {
+      els.tankStateBox.classList.remove("empty");
+      els.tankStateText.textContent = "OK";
+      els.tankStateSubtext.textContent = "Water level is sufficient";
+      els.alarmStateWrap.classList.remove("alert");
+      els.alarmStateText.textContent = state.connected ? "Monitoring" : "Standby";
+      els.alarmStateSubtext.textContent = state.connected ? "No active alerts" : "Waiting for live data";
+    }
+
+    const controlsActive = state.connected;
+    [
+      els.manualModeBtn,
+      els.autoModeBtn,
+      els.pumpOnBtn,
+      els.pumpOffBtn,
+      els.pwmSlider,
+      els.thresholdSlider,
+      els.emergencyBtn,
+      els.disconnectBtn,
+    ].forEach((el) => {
+      el.disabled = !controlsActive;
+    });
+
+    els.connectBtn.disabled = false;
+
+    renderLogs();
+    drawChart();
+  }
+
+  function renderLogs() {
+    els.logList.innerHTML = "";
+    state.logs.slice(0, 12).forEach((entry) => {
+      const row = document.createElement("div");
+      row.className = "log-entry";
+
+      const time = document.createElement("div");
+      time.className = "log-time";
+      time.textContent = formatTimestamp(new Date(entry.time), false);
+
+      const text = document.createElement("div");
+      text.className = `log-text ${entry.type}`;
+      text.textContent = entry.message;
+
+      row.appendChild(time);
+      row.appendChild(text);
+      els.logList.appendChild(row);
+    });
+  }
+
+  function drawChart() {
+    const canvas = els.historyChart;
+    const ctx = canvas.getContext("2d");
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+
+    const padding = { top: 28, right: 18, bottom: 44, left: 50 };
+    const chartWidth = width - padding.left - padding.right;
+    const chartHeight = height - padding.top - padding.bottom;
+
+    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    ctx.fillStyle = "#d6e0eb";
+    ctx.font = '13px "Plus Jakarta Sans"';
+
+    for (let i = 0; i <= 4; i += 1) {
+      const y = padding.top + (chartHeight / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, y);
+      ctx.lineTo(width - padding.right, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(214,224,235,0.88)";
+      ctx.fillText(String(100 - i * 25), 16, y + 4);
+    }
+
+    const data = state.history.length ? state.history : buildFallbackHistory();
+    const minT = data[0].t;
+    const maxT = data[data.length - 1].t || minT + 1;
+    const spanT = Math.max(1, maxT - minT);
+    const xFor = (t) => padding.left + ((t - minT) / spanT) * chartWidth;
+    const yFor = (value) => padding.top + chartHeight - (value / 100) * chartHeight;
+
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "rgba(105,255,54,0.55)";
+    ctx.beginPath();
+    const thresholdY = yFor(state.sensor.threshold || 40);
+    ctx.moveTo(padding.left, thresholdY);
+    ctx.lineTo(width - padding.right, thresholdY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#69ff36";
+    ctx.fillText(`Threshold (${state.sensor.threshold || 40}%)`, width - padding.right - 118, thresholdY - 8);
+
+    ctx.beginPath();
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#18a7ff";
+    data.forEach((point, index) => {
+      const x = xFor(point.t);
+      const y = yFor(point.moisture);
+      if (index === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
+    gradient.addColorStop(0, "rgba(24,167,255,0.25)");
+    gradient.addColorStop(1, "rgba(24,167,255,0)");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    data.forEach((point, index) => {
+      const x = xFor(point.t);
+      const y = yFor(point.moisture);
+      if (index === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.lineTo(width - padding.right, padding.top + chartHeight);
+    ctx.lineTo(padding.left, padding.top + chartHeight);
+    ctx.closePath();
+    ctx.fill();
+
+    const ticks = 6;
+    ctx.fillStyle = "rgba(214,224,235,0.88)";
+    ctx.font = '12px "Plus Jakarta Sans"';
+    for (let i = 0; i <= ticks; i += 1) {
+      const t = minT + (spanT / ticks) * i;
+      const x = padding.left + (chartWidth / ticks) * i;
+      const d = new Date(t);
+      ctx.fillText(`${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`, x - 18, height - 16);
+    }
+
+  }
+
+  function buildFallbackHistory() {
+    const now = Date.now();
+    const threshold = state.sensor.threshold || 40;
+    const points = [];
+    for (let i = 0; i < 24; i += 1) {
+      const t = now - (23 - i) * 60 * 60 * 1000;
+      points.push({
+        t,
+        moisture: clamp(Math.round(48 + Math.sin(i / 3) * 12 + (i % 9 === 0 ? 24 : 0)), 18, 84),
+        threshold,
+      });
+    }
+    return points;
+  }
+
+  function sendCommand(cmd, value) {
+    if (!state.ws || state.ws.readyState !== WebSocket.OPEN) {
+      pushLog("warn", "Command blocked because the dashboard is not connected.");
+      return false;
+    }
+
+    const payload = { cmd };
+    if (value !== undefined) payload.value = value;
+    state.ws.send(JSON.stringify(payload));
+    return true;
+  }
+
+  function pushLog(type, message) {
+    state.logs.unshift({ type, message, time: Date.now() });
+    state.logs = state.logs.slice(0, 40);
+    localStorage.setItem(STORAGE_KEYS.logs, JSON.stringify(state.logs));
+    renderLogs();
+  }
+
+  function ensureSeedLogs() {
+    if (!state.logs.length) {
+      state.logs = [
+        {
+          type: "info",
+          message: "Dashboard ready. Waiting for auto-link on flura.local.",
+          time: Date.now(),
+        },
+      ];
+      localStorage.setItem(STORAGE_KEYS.logs, JSON.stringify(state.logs));
+    }
+  }
+
+  function setConnectionState(kind) {
+    if (kind === "connecting") {
+      els.connectionText.textContent = "Connecting";
+      els.systemStateText.textContent = "Connecting";
+      els.systemPulse.classList.remove("online");
+    } else if (kind === "online") {
+      els.connectionText.textContent = "Connected";
+      els.systemStateText.textContent = "System Online";
+      els.systemPulse.classList.add("online");
+    } else {
+      els.connectionText.textContent = "Disconnected";
+      els.systemStateText.textContent = "System Offline";
+      els.systemPulse.classList.remove("online");
+    }
+  }
+
+  function signalStrengthLabel(rssi) {
+    if (!Number.isFinite(rssi)) return "No Signal";
+    if (rssi >= -55) return "Excellent";
+    if (rssi >= -65) return "Strong";
+    if (rssi >= -75) return "Fair";
+    return "Weak";
+  }
+
+  function moistureStatusLabel(value) {
+    if (value >= 65) return "Optimal";
+    if (value >= 40) return "Healthy";
+    if (value >= 25) return "Drying";
+    return "Needs Water";
+  }
+
+  function moistureStatusColor(value) {
+    if (value >= 65) return "#71ff3b";
+    if (value >= 40) return "#b7f833";
+    if (value >= 25) return "#ffbe2d";
+    return "#ff5f50";
+  }
+
+  function formatUptime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    return `${String(hours).padStart(2, "0")}h ${String(mins).padStart(2, "0")}m`;
+  }
+
+  function formatTimestamp(date, includeSeconds = true) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = d.toLocaleString("en-US", { month: "short" });
+    const year = d.getFullYear();
+    const time = includeSeconds
+      ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+      : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return `${day} ${month} ${year} | ${time}`;
+  }
+
+  function normalizeHost(host) {
+    let cleanHost = String(host || "").trim();
+    if (!cleanHost) return "";
+    if (/^wss?:\/\//i.test(cleanHost)) return cleanHost;
+    cleanHost = cleanHost.replace(/^https?:\/\//i, "");
+    cleanHost = cleanHost.replace(/\/.*$/, "");
+    cleanHost = cleanHost.replace(/:81$/, "");
+    return cleanHost;
+  }
+
+  function socketUrl(host) {
+    const cleanHost = normalizeHost(host);
+    if (/^wss?:\/\//i.test(cleanHost)) return cleanHost;
+    return `ws://${cleanHost}:81/ws`;
+  }
+
+  function loadJson(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (_) {
+      return fallback;
+    }
+  }
+
+  function mapRange(value, inMin, inMax, outMin, outMax) {
+    return outMin + ((value - inMin) * (outMax - outMin)) / (inMax - inMin);
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function titleCase(value) {
+    return String(value).charAt(0).toUpperCase() + String(value).slice(1);
+  }
+
+  function alpha(hex, opacity) {
+    const value = hex.replace("#", "");
+    const r = parseInt(value.substring(0, 2), 16);
+    const g = parseInt(value.substring(2, 4), 16);
+    const b = parseInt(value.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  function $(selector) {
+    return document.querySelector(selector);
+  }
+})();
+
+  </script>
+</body>
+</html>
