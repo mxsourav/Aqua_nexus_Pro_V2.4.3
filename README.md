@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="AquaNexus Pro Banner" width="100%">
+</p>
+
 # AquaNexus Pro - Smart Irrigation System
 
 AquaNexus Pro is an automated smart planter and irrigation control system built around the 30-pin ESP32 microcontroller. The system features a local web control panel communicating via WebSockets and integrates with the Blynk IoT Cloud for remote access.
